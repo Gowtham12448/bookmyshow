@@ -1,0 +1,27 @@
+# Compiled output
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Secrets / local config
+.env
+application-local.properties
+*.env
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
