@@ -1,16 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Select Location</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Select Location</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<nav class="navbar"><h1>🎬 BookMyShow</h1>
-    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+<nav class="navbar">
+    <a th:href="@{/home}" class="logo">🎬 BookMyShow</a>
+    <div class="nav-links">
+        <a th:href="@{/history}">My Bookings</a>
+        <a th:href="@{/logout}" class="btn-logout">Logout</a>
+    </div>
 </nav>
+
 <main class="container">
-    <h2>Select Location - <span th:text="${movie.title}"></span></h2>
-    <div class="chip-grid">
-        <a class="chip" th:each="loc : ${locations}"
-           th:href="@{'/theaters/' + ${movie.id}(location=${loc})}"
-           th:text="${loc}"></a>
+    <a class="back-link" th:href="@{/home}">← Back</a>
+
+    <div class="movie-hero-mini">
+        <img th:src="${movie.posterUrl}" th:alt="${movie.title}"
+             onerror="this.src='https://via.placeholder.com/100x150/1a1a2e/ff5252?text=M'">
+        <div>
+            <h1 th:text="${movie.title}"></h1>
+            <p>⭐ <span th:text="${#numbers.formatDecimal(movie.rating,1,1)}"></span>
+               • <span th:text="${movie.language}"></span>
+               • <span th:text="${movie.duration}"></span></p>
+            <p th:text="${movie.genre}"></p>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2>Pick a City</h2>
+        <form class="inline-search" th:action="@{'/locations/' + ${movie.id}}" method="get">
+            <input type="text" name="q" placeholder="Search city…" th:value="${q}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="city-grid" th:if="${not #lists.isEmpty(locations)}">
+        <a th:each="loc : ${locations}"
+           class="city-card"
+           th:href="@{'/theaters/' + ${movie.id}(location=${loc})}">
+            <span class="pin">📍</span>
+            <span th:text="${loc}"></span>
+        </a>
+    </div>
+    <div class="empty-state" th:if="${#lists.isEmpty(locations)}">
+        <h3>No cities found</h3>
+        <p>Try <a th:href="@{'/locations/' + ${movie.id}}">clearing search</a>.</p>
     </div>
 </main>
 </body>
