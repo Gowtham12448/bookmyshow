@@ -23,10 +23,8 @@ public class BookingController {
     private final BookingService bookingService;
     private final UserService userService;
 
-    public BookingController(ShowRepository showRepo,
-                             SeatRepository seatRepo,
-                             BookingService bookingService,
-                             UserService userService) {
+    public BookingController(ShowRepository showRepo, SeatRepository seatRepo,
+                             BookingService bookingService, UserService userService) {
         this.showRepo = showRepo;
         this.seatRepo = seatRepo;
         this.bookingService = bookingService;
@@ -35,8 +33,7 @@ public class BookingController {
 
     @GetMapping("/seats/{showId}")
     public String seats(@PathVariable Long showId, Model model) {
-        Show show = showRepo.findById(showId)
-                .orElseThrow(() -> new RuntimeException("Show not found: " + showId));
+        Show show = showRepo.findById(showId).orElseThrow();
         List<Seat> seats = seatRepo.findByShowId(showId);
         model.addAttribute("show", show);
         model.addAttribute("seats", seats);
@@ -48,13 +45,12 @@ public class BookingController {
                           @RequestParam(required = false) List<String> selectedSeats,
                           Model model) {
         if (selectedSeats == null || selectedSeats.isEmpty()) {
-            return "redirect:/seats/" + showId + "?error=noSeatsSelected";
+            return "redirect:/seats/" + showId + "?error=noSeats";
         }
-        Show show = showRepo.findById(showId)
-                .orElseThrow(() -> new RuntimeException("Show not found: " + showId));
+        Show show = showRepo.findById(showId).orElseThrow();
         model.addAttribute("show", show);
         model.addAttribute("selectedSeats", selectedSeats);
-        model.addAttribute("totalAmount", show.getPrice() * selectedSeats.size());
+        model.addAttribute("totalAmount", round2(show.getPrice() * selectedSeats.size()));
         return "payment";
     }
 
@@ -69,20 +65,13 @@ public class BookingController {
         return "redirect:/ticket/" + booking.getId();
     }
 
-    /** ✅ FIXED — now correctly loads booking and verifies ownership */
     @GetMapping("/ticket/{bookingId}")
-    public String ticket(@PathVariable Long bookingId,
-                         Authentication auth,
-                         Model model) {
+    public String ticket(@PathVariable Long bookingId, Authentication auth, Model model) {
         Booking booking = bookingService.getBooking(bookingId);
         User user = userService.findByUsername(auth.getName());
-
-        // Only allow the owner to view their own ticket
-        if (!booking.getUser().getId().equals(user.getId())) {
-            return "redirect:/history";
-        }
-
+        if (!booking.getUser().getId().equals(user.getId())) return "redirect:/history";
         model.addAttribute("booking", booking);
+        model.addAttribute("fromHistory", false);
         return "ticket";
     }
 
@@ -94,17 +83,16 @@ public class BookingController {
         return "history";
     }
 
-    /** ✅ FIXED — verify ownership before cancelling */
     @PostMapping("/cancel/{bookingId}")
     public String cancel(@PathVariable Long bookingId, Authentication auth) {
         Booking booking = bookingService.getBooking(bookingId);
         User user = userService.findByUsername(auth.getName());
-
-        if (!booking.getUser().getId().equals(user.getId())) {
-            return "redirect:/history";
-        }
-
+        if (!booking.getUser().getId().equals(user.getId())) return "redirect:/history";
         bookingService.cancelBooking(bookingId);
-        return "redirect:/history";
+        return "redirect:/history?cancelled";
+    }
+
+    private static double round2(double v) {
+        return Math.round(v * 100.0) / 100.0;
     }
 }
