@@ -1,27 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Now Showing</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMyShow — Movies</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
+
 <nav class="navbar">
-    <h1>🎬 BookMyShow</h1>
-    <div>
+    <a th:href="@{/home}" class="logo">🎬 BookMyShow</a>
+    <form class="nav-search" th:action="@{/home}" method="get">
+        <input type="text" name="q" placeholder="Search movies, genre…" th:value="${q}">
+        <button type="submit">🔍</button>
+    </form>
+    <div class="nav-links">
         <a th:href="@{/history}">My Bookings</a>
-        <a th:href="@{/logout}">Logout</a>
+        <a th:href="@{/logout}" class="btn-logout">Logout</a>
     </div>
 </nav>
-<main class="container">
-    <h2>Now Showing</h2>
-    <div class="movie-grid">
-        <div class="movie-card" th:each="m : ${movies}">
-            <img th:src="${m.posterUrl}" alt="poster">
-            <div class="movie-info">
-                <h3 th:text="${m.title}"></h3>
-                <p><span th:text="${m.language}"></span> • <span th:text="${m.genre}"></span></p>
-                <p><span th:text="${m.duration}"></span> • ⭐ <span th:text="${m.rating}"></span></p>
-                <a th:href="@{'/locations/' + ${m.id}}" class="btn">Book Now</a>
+
+<!-- HERO CAROUSEL -->
+<section class="hero-carousel" th:if="${not #lists.isEmpty(featured)}">
+    <div class="carousel-track" id="carousel">
+        <div class="hero-slide" th:each="m, it : ${featured}"
+             th:style="'background-image: linear-gradient(90deg, rgba(10,10,20,0.95), rgba(10,10,20,0.3)), url(' + ${m.bannerUrl} + ')'">
+            <div class="hero-content">
+                <span class="badge" th:text="${m.certificate}">UA</span>
+                <h1 th:text="${m.title}"></h1>
+                <p class="hero-meta">
+                    ⭐ <span th:text="${#numbers.formatDecimal(m.rating,1,1)}"></span>
+                    • <span th:text="${m.language}"></span>
+                    • <span th:text="${m.duration}"></span>
+                </p>
+                <p class="hero-desc" th:text="${m.description}"></p>
+                <a class="btn btn-primary" th:href="@{'/locations/' + ${m.id}}">🎟️ Book Now</a>
             </div>
         </div>
     </div>
-</main>
-</body>
-</html>
+    <button class="carousel-btn prev" onclick="slide(-1)">‹</button>
+    <button class="carousel-btn next" onclick="slide(1)">›</button>
+</section>
+
+<!-- PROMO STRIP -->
+<section class="promo-strip">
+    <div class="promo-card">🎁 Flat 30% OFF on your first booking — Code: FIRST30</div>
+    <div class="promo-card">🍿 Free popcorn on bookings above ₹500</div>
+    <div class="promo-card">💳 10% cashback with HDFC cards</div>
+</section>
+
+<!-- FILTERS + MOVIES -->
+<main class="container">
+    <div class="section-header">
+        <h2>Now Showing</h2>
+        <div class="filters">
+            <a th:href="@{/home}" th:class="${selectedLanguage == '' ? 'chip active' : 'chip'}">All</a>
+            <a th:each="lang : ${languages}"
+               th:href="@{/home(language=${lang},q=${q})}"
+               th:class="${selectedLanguage == lang ? 'chip active' : 'chip'}"
+               th:text="${lang}"></a>
+        </div>
+    </div>
+
+    <p class="search-info" th:if="${q != '' or selectedLanguage != ''}">
+        Showing results for
+        <strong th:if="${q != ''}" th:text="'\"' + ${q} + '\"'"></strong>
+        <strong th:if="${selectedLanguage != ''}" th:text="'• ' + ${selectedLanguage}"></strong>
+        — <a th:href="@{/home}">Clear filters</a>
+    </p>
+
+    <div class="movie-grid" th:if="${not #lists.isEmpty(movies)}">
+        <div class="movie-card" th:each="m : ${movies}">
+            <div class="poster-wrap">
+                <img th:src="${m.posterUrl}" th:alt="${m.title}"
+                     onerror="this.src='https://via.placeholder.com/400x600/1a1a2e/ff5252?text=Movie'">
+                <div class="rating-badge">⭐ <span th:text="${#numbers.formatDecimal(m.rating,1,1)}"></span></div>
+                <div class="poster-overlay">
