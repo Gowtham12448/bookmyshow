@@ -9,22 +9,27 @@ import java.util.List;
 @Service
 public class MovieService {
 
-    private final MovieRepository movieRepo;
+    private final MovieRepository repo;
 
-    public MovieService(MovieRepository movieRepo) {
-        this.movieRepo = movieRepo;
+    public MovieService(MovieRepository repo) {
+        this.repo = repo;
     }
 
-    public List<Movie> getAllMovies() {
-        return movieRepo.findAll();
+    public List<Movie> getAllMovies() { return repo.findAll(); }
+
+    public List<Movie> search(String q, String language) {
+        return repo.search(blankToNull(q), blankToNull(language));
     }
+
+    public List<Movie> getFeatured() { return repo.findByFeaturedTrue(); }
+
+    public List<String> getLanguages() { return repo.findDistinctLanguages(); }
 
     public Movie getMovie(Long id) {
-        return movieRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movie not found: " + id));
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Movie not found: " + id));
     }
 
-    public Movie save(Movie movie) {
-        return movieRepo.save(movie);
+    private String blankToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s.trim();
     }
 }
