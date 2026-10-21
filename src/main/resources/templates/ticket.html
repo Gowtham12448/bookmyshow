@@ -1,23 +1,64 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Ticket</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Your Ticket</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<nav class="navbar"><h1>🎬 BookMyShow</h1>
-    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
-</nav>
-<main class="container">
-    <div class="ticket">
-        <h2>🎟️ Booking Confirmed!</h2>
-        <div class="ticket-row"><span>Ticket No:</span><strong th:text="${booking.ticketNumber}"></strong></div>
-        <div class="ticket-row"><span>Movie:</span><strong th:text="${booking.show.movie.title}"></strong></div>
-        <div class="ticket-row"><span>Theater:</span><strong th:text="${booking.show.theater.name}"></strong></div>
-        <div class="ticket-row"><span>Location:</span><strong th:text="${booking.show.theater.location}"></strong></div>
-        <div class="ticket-row"><span>Date & Time:</span><strong th:text="${booking.show.showDate} + ' ' + ${booking.show.showTime}"></strong></div>
-        <div class="ticket-row"><span>Seats:</span><strong th:text="${#strings.listJoin(booking.seats, ', ')}"></strong></div>
-        <div class="ticket-row"><span>Amount:</span><strong>₹<span th:text="${booking.totalAmount}"></span></strong></div>
-        <div class="ticket-row"><span>Status:</span><strong th:text="${booking.status}"></strong></div>
+<nav class="navbar">
+    <a th:href="@{/home}" class="logo">🎬 BookMyShow</a>
+    <div class="nav-links">
+        <a th:href="@{/history}">My Bookings</a>
+        <a th:href="@{/logout}" class="btn-logout">Logout</a>
     </div>
-    <a class="btn-primary" th:href="@{/history}">View My Bookings</a>
+</nav>
+
+<main class="container">
+    <div class="ticket-wrap">
+        <div class="ticket-success">
+            <div class="checkmark">✓</div>
+            <h1>Booking Confirmed!</h1>
+            <p>Your ticket has been generated successfully.</p>
+        </div>
+
+        <div class="ticket">
+            <div class="ticket-left">
+                <p class="ticket-label">MOVIE</p>
+                <h2 th:text="${booking.show.movie.title}"></h2>
+                <p th:text="${booking.show.movie.language} + ' • ' + ${booking.show.movie.genre}"></p>
+
+                <p class="ticket-label mt">THEATER</p>
+                <p th:text="${booking.show.theater.name}"></p>
+                <p class="muted" th:text="${booking.show.theater.address}"></p>
+
+                <div class="ticket-grid">
+                    <div><p class="ticket-label">DATE</p>
+                         <strong th:text="${#temporals.format(booking.show.showDate,'dd MMM yyyy')}"></strong></div>
+                    <div><p class="ticket-label">TIME</p>
+                         <strong th:text="${#temporals.format(booking.show.showTime,'hh:mm a')}"></strong></div>
+                    <div><p class="ticket-label">SEATS</p>
+                         <strong th:text="${#strings.listJoin(booking.seats, ', ')}"></strong></div>
+                    <div><p class="ticket-label">AMOUNT</p>
+                         <strong>₹<span th:text="${#numbers.formatDecimal(booking.totalAmount,1,2)}"></span></strong></div>
+                </div>
+            </div>
+            <div class="ticket-right">
+                <p class="ticket-label">BOOKING ID</p>
+                <p class="ticket-id" th:text="${booking.ticketNumber}"></p>
+                <div class="barcode"></div>
+                <p class="muted small">Scan at entrance</p>
+                <p class="status-badge"
+                   th:classappend="${booking.status == 'CANCELLED'} ? 'cancelled' : 'active'"
+                   th:text="${booking.status}"></p>
+            </div>
+        </div>
+
+        <div class="ticket-actions">
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Ticket</button>
+            <a class="btn btn-primary" th:href="@{/history}">View My Bookings</a>
+        </div>
+    </div>
 </main>
 </body>
 </html>
