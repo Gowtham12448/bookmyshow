@@ -1,29 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>My Bookings</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<nav class="navbar"><h1>🎬 BookMyShow</h1>
-    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+<nav class="navbar">
+    <a th:href="@{/home}" class="logo">🎬 BookMyShow</a>
+    <div class="nav-links">
+        <a th:href="@{/home}">Movies</a>
+        <a th:href="@{/logout}" class="btn-logout">Logout</a>
+    </div>
 </nav>
+
 <main class="container">
-    <h2>My Bookings</h2>
-    <p th:if="${#lists.isEmpty(bookings)}" class="empty">No bookings yet. <a th:href="@{/home}">Book a movie now!</a></p>
+    <p th:if="${param.cancelled}" class="success-banner">✅ Ticket cancelled — refund initiated.</p>
+
+    <div class="section-header">
+        <h2>My Bookings</h2>
+        <p class="muted" th:text="'Welcome, ' + ${user.fullName} + ' 👋'"></p>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(bookings)}">
+        <h3>🎟️ No bookings yet</h3>
+        <p>Book your first movie ticket now!</p>
+        <a class="btn btn-primary" th:href="@{/home}">Browse Movies</a>
+    </div>
+
     <div class="booking-list">
         <div class="booking-card" th:each="b : ${bookings}"
              th:classappend="${b.status == 'CANCELLED'} ? 'cancelled' : ''">
-            <div>
+            <div class="booking-poster">
+                <img th:src="${b.show.movie.posterUrl}" th:alt="${b.show.movie.title}"
+                     onerror="this.src='https://via.placeholder.com/80x120/1a1a2e/ff5252?text=M'">
+            </div>
+            <div class="booking-body">
                 <h3 th:text="${b.show.movie.title}"></h3>
                 <p th:text="${b.show.theater.name} + ' • ' + ${b.show.theater.location}"></p>
-                <p th:text="${b.show.showDate} + ' ' + ${b.show.showTime}"></p>
-                <p>Seats: <span th:text="${#strings.listJoin(b.seats, ', ')}"></span></p>
-                <p>Amount: ₹<span th:text="${b.totalAmount}"></span></p>
-                <p>Status: <span th:text="${b.status}"></span></p>
+                <p>📅 <span th:text="${#temporals.format(b.show.showDate,'dd MMM')}"></span>
+                   🕒 <span th:text="${#temporals.format(b.show.showTime,'hh:mm a')}"></span></p>
+                <p>💺 <span th:text="${#strings.listJoin(b.seats, ', ')}"></span></p>
+                <p class="booking-amount">₹<span th:text="${#numbers.formatDecimal(b.totalAmount,1,2)}"></span></p>
+                <p class="status-badge"
+                   th:classappend="${b.status == 'CANCELLED'} ? 'cancelled' : 'active'"
+                   th:text="${b.status}"></p>
             </div>
-            <form th:if="${b.status == 'BOOKED'}" th:action="@{'/cancel/' + ${b.id}}" method="post">
-                <button class="btn-cancel" onclick="return confirm('Cancel this ticket?')">Cancel</button>
-            </form>
+            <div class="booking-actions">
+                <a class="btn btn-secondary" th:href="@{'/ticket/' + ${b.id}}">🎫 View Ticket</a>
+                <button th:if="${b.status == 'BOOKED'}"
+                        class="btn btn-danger"
+                        th:attr="onclick='openCancelModal(' + ${b.id} + ')'">Cancel</button>
+            </div>
         </div>
     </div>
 </main>
+
+<!-- Cancel Modal -->
+<div class="modal-backdrop" id="cancelModal">
+    <div class="modal">
+        <h3>⚠️ Cancel Ticket?</h3>
+        <p>This action cannot be undone. Your seats will be released and a refund will be initiated (5-7 business days).</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeCancelModal()">Keep Ticket</button>
+            <form id="cancelForm" method="post" style="display:inline;">
+                <button class="btn btn-danger" type="submit">Yes, Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCancelModal(id) {
+        document.getElementById('cancelForm').action = '/cancel/' + id;
+        document.getElementById('cancelModal').classList.add('show');
+    }
+    function closeCancelModal() {
+        document.getElementById('cancelModal').classList.remove('show');
+    }
+</script>
 </body>
 </html>
