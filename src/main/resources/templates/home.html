@@ -62,10 +62,10 @@
         </div>
     </div>
 
-    <p class="search-info" th:if="${q != '' or selectedLanguage != ''}">
+        <p class="search-info" th:if="${q != '' or selectedLanguage != ''}">
         Showing results for
-        <strong th:if="${q != ''}" th:text="'\"' + ${q} + '\"'"></strong>
-        <strong th:if="${selectedLanguage != ''}" th:text="'• ' + ${selectedLanguage}"></strong>
+        <strong th:if="${q != ''}" th:text="|&quot;${q}&quot;|"></strong>
+        <strong th:if="${selectedLanguage != ''}" th:text="|• ${selectedLanguage}|"></strong>
         — <a th:href="@{/home}">Clear filters</a>
     </p>
 
