@@ -76,3 +76,37 @@
                      onerror="this.src='https://via.placeholder.com/400x600/1a1a2e/ff5252?text=Movie'">
                 <div class="rating-badge">⭐ <span th:text="${#numbers.formatDecimal(m.rating,1,1)}"></span></div>
                 <div class="poster-overlay">
+                    <a class="btn btn-primary" th:href="@{'/locations/' + ${m.id}}">Book Tickets</a>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 th:text="${m.title}"></h3>
+                <p class="meta">
+                    <span th:text="${m.language}"></span> •
+                    <span th:text="${m.genre}"></span>
+                </p>
+                <p class="meta" th:text="${m.duration}"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(movies)}">
+        <h3>😔 No movies found</h3>
+        <p>Try a different search or <a th:href="@{/home}">clear filters</a>.</p>
+    </div>
+</main>
+
+<script>
+    let idx = 0;
+    const track = document.getElementById('carousel');
+    if (track) {
+        const total = track.children.length;
+        function slide(dir) {
+            idx = (idx + dir + total) % total;
+            track.style.transform = `translateX(-${idx * 100}%)`;
+        }
+        setInterval(() => slide(1), 6000);
+    }
+</script>
+</body>
+</html>
