@@ -1,30 +1,51 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Payment</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<nav class="navbar"><h1>🎬 BookMyShow</h1>
-    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+<nav class="navbar">
+    <a th:href="@{/home}" class="logo">🎬 BookMyShow</a>
+    <div class="nav-links">
+        <a th:href="@{/history}">My Bookings</a>
+        <a th:href="@{/logout}" class="btn-logout">Logout</a>
+    </div>
 </nav>
+
 <main class="container">
-    <div class="pay-card">
-        <h2>Payment</h2>
-        <p><strong>Movie:</strong> <span th:text="${show.movie.title}"></span></p>
-        <p><strong>Theater:</strong> <span th:text="${show.theater.name}"></span></p>
-        <p><strong>Show:</strong> <span th:text="${show.showDate} + ' ' + ${show.showTime}"></span></p>
-        <p><strong>Seats:</strong> <span th:text="${#strings.listJoin(selectedSeats, ', ')}"></span></p>
-        <p><strong>Amount:</strong> ₹<span th:text="${totalAmount}"></span></p>
-        <form th:action="@{/confirm-booking}" method="post">
-            <input type="hidden" name="showId" th:value="${show.id}">
-            <input type="hidden" name="selectedSeats" th:each="s : ${selectedSeats}" th:value="${s}">
-            <label>Payment Method:</label>
-            <select name="paymentMethod" required>
-                <option value="UPI">UPI</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Debit Card">Debit Card</option>
-                <option value="Net Banking">Net Banking</option>
-            </select>
-            <button class="btn-primary" type="submit">Pay ₹<span th:text="${totalAmount}"></span></button>
-        </form>
+    <a class="back-link" th:href="@{'/seats/' + ${show.id}}">← Back to seats</a>
+
+    <div class="payment-layout">
+        <div class="pay-card">
+            <h2>💳 Payment</h2>
+            <div class="pay-summary">
+                <p><strong>Movie:</strong> <span th:text="${show.movie.title}"></span></p>
+                <p><strong>Theater:</strong> <span th:text="${show.theater.name} + ', ' + ${show.theater.location}"></span></p>
+                <p><strong>Show:</strong>
+                    <span th:text="${#temporals.format(show.showDate,'dd MMM')} + ' ' + ${#temporals.format(show.showTime,'hh:mm a')}"></span>
+                </p>
+                <p><strong>Seats:</strong> <span th:text="${#strings.listJoin(selectedSeats, ', ')}"></span></p>
+                <p class="grand-total"><strong>Total:</strong> ₹<span th:text="${#numbers.formatDecimal(totalAmount,1,2)}"></span></p>
+            </div>
+            <form th:action="@{/confirm-booking}" method="post">
+                <input type="hidden" name="showId" th:value="${show.id}">
+                <input type="hidden" name="selectedSeats" th:each="s : ${selectedSeats}" th:value="${s}">
+
+                <label class="field-label">Choose payment method</label>
+                <div class="pay-methods">
+                    <label class="pay-method"><input type="radio" name="paymentMethod" value="UPI" checked> UPI</label>
+                    <label class="pay-method"><input type="radio" name="paymentMethod" value="Credit Card"> Credit Card</label>
+                    <label class="pay-method"><input type="radio" name="paymentMethod" value="Debit Card"> Debit Card</label>
+                    <label class="pay-method"><input type="radio" name="paymentMethod" value="Net Banking"> Net Banking</label>
+                </div>
+
+                <button class="btn btn-primary btn-lg btn-full" type="submit">
+                    Pay ₹<span th:text="${#numbers.formatDecimal(totalAmount,1,2)}"></span>
+                </button>
+            </form>
+        </div>
     </div>
 </main>
 </body>
