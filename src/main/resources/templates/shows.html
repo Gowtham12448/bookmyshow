@@ -1,18 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Showtimes</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Showtimes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<nav class="navbar"><h1>🎬 BookMyShow</h1>
-    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+<nav class="navbar">
+    <a th:href="@{/home}" class="logo">🎬 BookMyShow</a>
+    <div class="nav-links">
+        <a th:href="@{/history}">My Bookings</a>
+        <a th:href="@{/logout}" class="btn-logout">Logout</a>
+    </div>
 </nav>
+
 <main class="container">
-    <h2><span th:text="${movie.title}"></span> - Showtimes</h2>
-    <div class="chip-grid">
-        <a class="chip" th:each="s : ${shows}"
+    <a class="back-link" th:href="@{'/theaters/' + ${movie.id}(location=${theater.location})}">← Back</a>
+
+    <div class="show-header">
+        <h2 th:text="${movie.title}"></h2>
+        <p th:text="${theater.name} + ' • ' + ${theater.location}"></p>
+        <p class="muted">⭐ <span th:text="${#numbers.formatDecimal(theater.rating,1,1)}"></span>
+           • <span th:text="${theater.amenities}"></span></p>
+    </div>
+
+    <h3 class="mt-3">Available Shows</h3>
+    <div class="show-grid">
+        <a th:each="s : ${shows}"
+           class="show-chip"
            th:href="@{'/seats/' + ${s.id}}">
-            <span th:text="${s.showDate}"></span> • <span th:text="${s.showTime}"></span>
-            • ₹<span th:text="${s.price}"></span>
+            <span class="show-time" th:text="${#temporals.format(s.showTime,'hh:mm a')}"></span>
+            <span class="show-date" th:text="${#temporals.format(s.showDate,'EEE, dd MMM')}"></span>
+            <span class="show-price">₹<span th:text="${#numbers.formatDecimal(s.price,1,2)}"></span></span>
         </a>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(shows)}">
+        <h3>No shows scheduled</h3>
+        <p>Try another theater or date.</p>
     </div>
 </main>
 </body>
