@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Register</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Register — BookMyShow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body class="auth-body">
-<div class="auth-card">
-    <h1>🎬 BookMyShow</h1>
-    <h2>Create Account</h2>
-    <p th:if="${error}" class="error" th:text="${error}"></p>
-    <form th:action="@{/register}" method="post">
-        <input type="text" name="fullName" placeholder="Full Name" required>
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="phone" placeholder="Phone" required>
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a th:href="@{/login}">Login</a></p>
+<div class="auth-wrap">
+    <div class="auth-hero">
+        <h1>🎬 BookMyShow</h1>
+        <p>Join millions of movie lovers. Create your free account today.</p>
+        <div class="auth-features">
+            <p>🎟️ Book in 3 clicks</p>
+            <p>📱 View tickets anytime</p>
+            <p>💸 Exclusive offers</p>
+        </div>
+    </div>
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        <p th:if="${error}" class="error-banner" th:text="${error}"></p>
+
+        <form th:action="@{/register}" method="post">
+            <input type="text" name="fullName" placeholder="Full Name" required>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="phone" placeholder="Phone" required>
+            <button class="btn btn-primary btn-full btn-lg" type="submit">Register →</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a th:href="@{/login}">Login</a></p>
+    </div>
 </div>
 </body>
 </html>
