@@ -1,0 +1,3 @@
+-- This file is intentionally empty.
+-- Hibernate (spring.jpa.hibernate.ddl-auto=update) auto-creates all tables
+-- from JPA entities. If you later disable auto-DDL, put CREATE TABLE here.

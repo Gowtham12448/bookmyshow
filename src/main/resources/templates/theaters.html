@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Theaters</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<nav class="navbar"><h1>🎬 BookMyShow</h1>
+    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+</nav>
+<main class="container">
+    <h2>Select Theater in <span th:text="${location}"></span> - <span th:text="${movie.title}"></span></h2>
+    <div class="list-grid">
+        <div class="list-card" th:each="t : ${theaters}">
+            <h3 th:text="${t.name}"></h3>
+            <p th:text="${t.address}"></p>
+            <a class="btn" th:href="@{'/shows/' + ${movie.id}(theaterId=${t.id})}">View Shows</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

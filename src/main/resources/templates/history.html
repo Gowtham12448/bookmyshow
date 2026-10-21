@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>My Bookings</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<nav class="navbar"><h1>🎬 BookMyShow</h1>
+    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+</nav>
+<main class="container">
+    <h2>My Bookings</h2>
+    <p th:if="${#lists.isEmpty(bookings)}" class="empty">No bookings yet. <a th:href="@{/home}">Book a movie now!</a></p>
+    <div class="booking-list">
+        <div class="booking-card" th:each="b : ${bookings}"
+             th:classappend="${b.status == 'CANCELLED'} ? 'cancelled' : ''">
+            <div>
+                <h3 th:text="${b.show.movie.title}"></h3>
+                <p th:text="${b.show.theater.name} + ' • ' + ${b.show.theater.location}"></p>
+                <p th:text="${b.show.showDate} + ' ' + ${b.show.showTime}"></p>
+                <p>Seats: <span th:text="${#strings.listJoin(b.seats, ', ')}"></span></p>
+                <p>Amount: ₹<span th:text="${b.totalAmount}"></span></p>
+                <p>Status: <span th:text="${b.status}"></span></p>
+            </div>
+            <form th:if="${b.status == 'BOOKED'}" th:action="@{'/cancel/' + ${b.id}}" method="post">
+                <button class="btn-cancel" onclick="return confirm('Cancel this ticket?')">Cancel</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

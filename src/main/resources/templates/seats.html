@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Select Seats</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<nav class="navbar">
+    <h1>🎬 BookMyShow</h1>
+    <div>
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/history}">My Bookings</a>
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+</nav>
+<main class="container">
+    <h2 th:text="${show.movie.title} + ' @ ' + ${show.theater.name}"></h2>
+    <p>Show: <span th:text="${show.showDate}"></span> •
+       <span th:text="${show.showTime}"></span> •
+       ₹<span th:text="${show.price}"></span> / seat</p>
+
+    <p th:if="${param.error}" class="error" style="margin-bottom:1rem;">
+        ⚠️ Please select at least one seat before proceeding.
+    </p>
+
+    <div class="screen">SCREEN</div>
+    <form th:action="@{/payment}" method="post">
+        <input type="hidden" name="showId" th:value="${show.id}">
+        <div class="seat-grid">
+            <label th:each="s : ${seats}" th:class="${s.booked} ? 'seat booked' : 'seat'">
+                <input type="checkbox" name="selectedSeats" th:value="${s.seatNumber}"
+                       th:disabled="${s.booked}" th:onchange="updateTotal()"/>
+                <span th:text="${s.seatNumber}"></span>
+            </label>
+        </div>
+        <div class="footer-bar">
+            <p>Selected: <span id="count">0</span> seat(s) • Total: ₹<span id="total">0</span></p>
+            <button class="btn-primary" type="submit">Proceed to Pay</button>
+        </div>
+    </form>
+</main>
+<script>
+const price = [[${show.price}]];
+function updateTotal() {
+    const checked = document.querySelectorAll('input[name="selectedSeats"]:checked');
+    document.getElementById('count').innerText = checked.length;
+    document.getElementById('total').innerText = (checked.length * price).toFixed(2);
+}
+</script>
+</body>
+</html>

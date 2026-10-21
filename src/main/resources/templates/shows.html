@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Showtimes</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<nav class="navbar"><h1>🎬 BookMyShow</h1>
+    <div><a th:href="@{/home}">Home</a><a th:href="@{/history}">My Bookings</a><a th:href="@{/logout}">Logout</a></div>
+</nav>
+<main class="container">
+    <h2><span th:text="${movie.title}"></span> - Showtimes</h2>
+    <div class="chip-grid">
+        <a class="chip" th:each="s : ${shows}"
+           th:href="@{'/seats/' + ${s.id}}">
+            <span th:text="${s.showDate}"></span> • <span th:text="${s.showTime}"></span>
+            • ₹<span th:text="${s.price}"></span>
+        </a>
+    </div>
+</main>
+</body>
+</html>

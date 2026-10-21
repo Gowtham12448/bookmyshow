@@ -1,0 +1,4 @@
+-- This file is intentionally empty.
+-- Seed data (movies, theaters, shows, seats) is loaded at startup by
+-- com.bookmyshow.config.DataInitializer (CommandLineRunner).
+-- If you disable DataInitializer, add INSERT statements here.
